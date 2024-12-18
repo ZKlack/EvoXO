@@ -78,4 +78,67 @@ namespace ZK {
 				return i>>1;
 		return -1;
 	}
+
+	bool tictactoe::isdone() const
+	{
+		int8_t board[9];
+		bool playable=false;
+		for(int8_t i=0;i<18;i+=2)
+		{
+			board[i>>1]=0b11&(_key>>i);
+			if(board[i>>1]==0)
+				playable=true;
+		}
+		if(!playable)
+			return true;
+		if(( board[0]==board[4] && board[0]==board[8] && board[0]!=0 ) || ( board[2]==board[4] && board[2]==board[6] && board[2]!=0 ))
+			return true;
+		for(int8_t i=0;i<3;++i)
+			if(( board[i]==board[i+3] && board[i]==board[i+6] && board[i]!=0 ) || ( board[i*3]==board[i*3+1] && board[i]==board[i*3+2] && board[i*3]!=0 ))
+				return true;
+		return false;
+	}
+
+	bool tictactoe::operator>(tictactoe other) const
+	{
+		tictactoe copy(_key);
+		copy.reduce();
+		other.reduce();
+		return copy._key>copy._key;
+	}
+	bool tictactoe::operator<(tictactoe other) const
+	{
+		tictactoe copy(_key);
+		copy.reduce();
+		other.reduce();
+		return copy._key<copy._key;
+	}
+	bool tictactoe::operator>=(tictactoe other) const
+	{
+		tictactoe copy(_key);
+		copy.reduce();
+		other.reduce();
+		return copy._key>=copy._key;
+	}
+	bool tictactoe::operator<=(tictactoe other) const
+	{
+		tictactoe copy(_key);
+		copy.reduce();
+		other.reduce();
+		return copy._key<=copy._key;
+	}
+	bool tictactoe::operator==(tictactoe other) const
+	{
+		tictactoe copy(_key);
+		copy.reduce();
+		other.reduce();
+		return copy._key==copy._key;
+	}
+	bool tictactoe::operator!=(tictactoe other) const
+	{
+		tictactoe copy(_key);
+		copy.reduce();
+		other.reduce();
+		return copy._key!=copy._key;
+	}
 }
