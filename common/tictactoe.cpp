@@ -35,4 +35,47 @@ namespace ZK {
 				_key ^= 3<<i;
 		return *this;
 	}
+
+	int8_t tictactoe::reduce()
+	{
+		int32_t lowest=_key;
+		int8_t chain=0;
+		for(int8_t i=1;i<0b10000;++i)
+		{
+			tictactoe copy(_key);
+			copy.transform(i);
+			if(lowest>copy._key)
+			{
+				chain=i;
+				lowest=copy._key;
+			}
+		}
+		_key=lowest;
+		return chain;
+	}
+	int8_t tictactoe::dechainer(int8_t chain) const
+	{
+		return (0b1100&chain) | (0b100&chain?(0b11&chain):(0b11&(4-(0b11&chain)))); //I love bitwise stuff
+	}
+
+	tictactoe& tictactoe::transform(int8_t chain)
+	{
+		for(int8_t i=0b11&chain;i>0;--i)
+			rotate();
+		if(0b100&chain)
+			flip();
+		if(0b1000&chain)
+			reverse();
+		return *this;
+	}
+	int8_t tictactoe::transform(int8_t chain, int8_t cell) const
+	{
+		cell%=9;
+		tictactoe board(1<<(cell<<1));
+		board.transform(0b111&chain);
+		for(int8_t i=0;i<18;i+=2)
+			if(0b11&(board.key()>>i))
+				return i>>1;
+		return -1;
+	}
 }
