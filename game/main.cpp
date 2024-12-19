@@ -39,4 +39,38 @@ int main(int argc, char* argv[])
 		cerr<<"Error: too many arguments!";
 		return 1;
 	}
+
+	ZK::tictactoe game;
+	int lastchoice[2];
+	int winner=0;
+
+	while(true)
+	{
+		//print the game
+		for(int i=0;i<18;i+=2)
+		{
+			char cell = 3&(game.key()>>i);
+			switch(cell)
+			{
+				case 0:
+				cell=' ';
+				break;
+				case 1:
+				cell='X';
+				break;
+				case 2:
+				cell='O';
+				break;
+				case 3:
+				cell='?';
+			}
+			cout<<cell;
+			if(i==8)
+				cout<<'\t'<<i-2<<'|'<<i-1<<'|'<<i<<'\n';
+			else if(i%3==2)
+				cout<<'\t'<<i-2<<'|'<<i-1<<'|'<<i<<"\n-----\t-----\n";
+			else
+				cout<<'|';
+		}
+	}
 }
