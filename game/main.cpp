@@ -51,9 +51,9 @@ int main(int argc, char* argv[])
 		history=game;
 
 		//print game
-		for(int i=0;i<18;i+=2)
+		for(int i=0;i<9;++i)
 		{
-			char cell = 3&(game.key()>>i);
+			char cell = 3&(game.key()>>(i<<1));
 			switch(cell)
 			{
 				case 0:
