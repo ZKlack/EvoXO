@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 	int result = assessgame(game);
 	currentplayer=3-currentplayer;
 	if(result)
-		cout<<"player"<<currentplayer<<"("<<(currentplayer==1?'X':'O')<<" won!\n";
+		cout<<"player"<<currentplayer<<"("<<(currentplayer==1?'X':'O')<<") won!\n";
 	else
 		cout<<"draw\n";
 	system("pause");
