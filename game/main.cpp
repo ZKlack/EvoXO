@@ -70,9 +70,9 @@ int main(int argc, char* argv[])
 			}
 			cout<<cell;
 			if(i==8)
-				cout<<'\t'<<i-2<<'|'<<i-1<<'|'<<i<<'\n';
+				cout<<'\t'<<i-1<<'|'<<i<<'|'<<i+1<<'\n';
 			else if(i%3==2)
-				cout<<'\t'<<i-2<<'|'<<i-1<<'|'<<i<<"\n-+-+-\t-+-+-\n";
+				cout<<'\t'<<i-1<<'|'<<i<<'|'<<i+1<<"\n-+-+-\t-+-+-\n";
 			else
 				cout<<'|';
 		}
@@ -106,7 +106,7 @@ int pickmove(string name, int player)
 	}
 	cout<<(player==1?'X':'O')<<" to move: ";
 	cin>>move;
-	return move%9;
+	return (--move)%9;
 }
 
 int assessgame(ZK::tictactoe game)
