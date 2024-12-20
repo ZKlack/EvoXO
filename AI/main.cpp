@@ -7,6 +7,19 @@ using namespace std;
 struct memorycell{
 	uint32_t gamestate;
 	uint8_t wieghts[9];
+	memorycell()
+	{
+		gamestate=0;
+		for(int i=0;i<9;++i)
+			wieghts[i]=1;
+	}
+	memorycell(ZK::tictactoe game)
+	{
+		game.reduce();
+		gamestate = game.key();
+		for(int i=0;i<9;++i)
+			wieghts[i]=1;
+	}
 	bool operator<(memorycell other) { return gamestate<other.gamestate; }
 	bool operator==(memorycell other) { return gamestate==other.gamestate; }
 };
@@ -14,6 +27,7 @@ struct memorycell{
 int calculate(string name, ZK::tictactoe game);
 void readmemory(string name, vector<memorycell>& memory);
 void learn(string name, ZK::tictactoe game, int move, string cond);
+vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe game);
 
 int main(int argc, char* argv[])
 {
@@ -44,7 +58,7 @@ int calculate(string name, ZK::tictactoe game)
 	game.reduce();
 	vector<memorycell> memory;
 	readmemory(name,memory);
-
+	vector<memorycell>::iterator cell = search(memory,game);
 }
 
 void readmemory(string name, vector<memorycell>& memory)
@@ -90,4 +104,21 @@ void readmemory(string name, vector<memorycell>& memory)
 		memcell.gamestate &= ~(0b11111111<<24);
 		memory.push_back(memcell);
 	}
+}
+
+vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe game)
+{
+	memorycell target = game;
+	vector<memorycell>::iterator l=memory.begin(),r=memory.end(),m;
+	while(l<r)
+	{
+		m=l+(r-l)/2;
+		if(*m==target)
+			return m;
+		if(*m<target)
+			l=m+1;
+		else
+			r=m;
+	}
+	return memory.end();
 }
