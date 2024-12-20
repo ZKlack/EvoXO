@@ -67,8 +67,8 @@ void readmemory(string name, vector<memorycell>& memory)
 		throw(1);
 	}
 	memfile.seekg(0,ios::end);
-	size_t filesize = memfile.tellg();
-	if((filesize-5)%12)
+	size_t filesize = memfile.tellg()-5;
+	if(filesize%12)
 	{
 		cerr<<"Error: incorrect file format.";
 		memfile.close();
@@ -76,14 +76,15 @@ void readmemory(string name, vector<memorycell>& memory)
 	}
 
 	//preserve space for data
-	memory.reserve((filesize-5)/12);
+	filesize/=12;
+	memory.reserve(filesize);
 
 	//read data
 	memfile.seekg(5,ios::beg);
 	memorycell memcell;
-	while(memfile.peek() != EOF)
+	while(filesize--)
 	{
-		memfile.seekg(-1);
+		memfile.seekg(-1,ios::cur);
 		memfile.read(reinterpret_cast<char*>(&memcell), 13);
 		memcell.gamestate &= ~(0b11111111<<24);
 		memory.push_back(memcell);
