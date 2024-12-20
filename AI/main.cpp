@@ -67,7 +67,8 @@ void readmemory(string name, vector<memorycell>& memory)
 		throw(1);
 	}
 	memfile.seekg(0,ios::end);
-	size_t filesize = memfile.tellg()-5;
+	size_t filesize = memfile.tellg();
+	filesize-=5;
 	if(filesize%12)
 	{
 		cerr<<"Error: incorrect file format.";
