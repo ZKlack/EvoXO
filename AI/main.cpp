@@ -2,6 +2,7 @@
 #include<fstream>
 #include<iostream>
 #include<vector>
+#include<random>
 using namespace std;
 
 struct memorycell{
@@ -11,20 +12,54 @@ struct memorycell{
 	{
 		gamestate=0;
 		for(int i=0;i<9;++i)
-			wieghts[i]=1;
+			if((gamestate>>(i<<1))&0b11)
+				wieghts[i]=0;
+			else
+				wieghts[i]=1;
 	}
 	memorycell(ZK::tictactoe game)
 	{
 		game.reduce();
 		gamestate = game.key();
 		for(int i=0;i<9;++i)
-			wieghts[i]=1;
+			if((gamestate>>(i<<1))&0b11)
+				wieghts[i]=0;
+			else
+				wieghts[i]=1;
 	}
 	bool operator<(memorycell other) { return gamestate<other.gamestate; }
 	bool operator==(memorycell other) { return gamestate==other.gamestate; }
 	int pick()
 	{
-		//pick a random choice taking wieghts into account
+		int total = 0;
+		for(int i=0;i<9;++i)
+			total+=wieghts[i];
+
+		if(total==0)
+		{
+			*this = memorycell(gamestate);
+			total = 0;
+			for(int i=0;i<9;++i)
+				total+=wieghts[i];
+		}
+		if(total==0)
+			throw(1);
+
+		// <chatGPT code block>
+		mt19937 gen(random_device{}());
+		uniform_int_distribution<> dist(0,total-1);
+		int random_number = dist(gen);
+		// </chatGPT code block>		*I have no idea how this works
+
+		int consumed_chance = 0;
+		for(int i=0;i<9;++i)
+		{
+			consumed_chance += wieghts[i];
+			if(random_number<consumed_chance)
+				return i;
+		}
+
+		throw(1);
 	}
 };
 
@@ -32,7 +67,8 @@ int calculate(string name, ZK::tictactoe game);
 void readmemory(string name, vector<memorycell>& memory);
 void learn(string name, ZK::tictactoe game, int move, string cond);
 vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe game);
-void insertmemory(string name, vector<memorycell>& memory);
+vector<memorycell>::iterator insertmemory(string name, vector<memorycell>& memory);
+void rewrite(string name, vector<memorycell>& memory, vector<memorycell>::iterator first);
 
 int main(int argc, char* argv[])
 {
@@ -60,17 +96,20 @@ int main(int argc, char* argv[])
 
 int calculate(string name, ZK::tictactoe game)
 {
-	int8_t chain = game.reduce();
+	int8_t chain = game.reduce(), result;
 	chain = game.dechainer(chain);
 	vector<memorycell> memory;
 	readmemory(name,memory);
 	vector<memorycell>::iterator cell = search(memory,game);
 	if(cell!=memory.end())
-		return game.transform(chain,cell->pick());
-	//remember the game if you can't find it
-	memory.push_back(game);
-	int result = game.transform(chain,memory[memory.size()-1].pick());
-	insertmemory(name,memory);
+		result = game.transform(chain,cell->pick());
+	else
+	{
+		memory.push_back(game);
+		result = game.transform(chain,memory[memory.size()-1].pick());
+		cell = insertmemory(name,memory);
+	}
+	rewrite(name,memory,cell);
 	return result;
 }
 
@@ -136,9 +175,16 @@ vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe ga
 	return memory.end();
 }
 
-void insertmemory(string name, vector<memorycell>& memory)
+vector<memorycell>::iterator insertmemory(string name, vector<memorycell>& memory)
 {
 	//insert the last memorycell remembering the new location
 
 	//overwrite the memory file starting from the new location since the rest is the same
+	// NOTE: user rewrite()
+}
+
+void rewrite(string name, vector<memorycell>& memory, vector<memorycell>::iterator first)
+{
+	//overwrite the memory starting from the cell ${first}
+	
 }
