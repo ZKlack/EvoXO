@@ -22,12 +22,17 @@ struct memorycell{
 	}
 	bool operator<(memorycell other) { return gamestate<other.gamestate; }
 	bool operator==(memorycell other) { return gamestate==other.gamestate; }
+	int pick()
+	{
+		//pick a random choice taking wieghts into account
+	}
 };
 
 int calculate(string name, ZK::tictactoe game);
 void readmemory(string name, vector<memorycell>& memory);
 void learn(string name, ZK::tictactoe game, int move, string cond);
 vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe game);
+void insertmemory(string name, vector<memorycell>& memory);
 
 int main(int argc, char* argv[])
 {
@@ -55,10 +60,18 @@ int main(int argc, char* argv[])
 
 int calculate(string name, ZK::tictactoe game)
 {
-	game.reduce();
+	int8_t chain = game.reduce();
+	chain = game.dechainer(chain);
 	vector<memorycell> memory;
 	readmemory(name,memory);
 	vector<memorycell>::iterator cell = search(memory,game);
+	if(cell!=memory.end())
+		return game.transform(chain,cell->pick());
+	//remember the game if you can't find it
+	memory.push_back(game);
+	int result = game.transform(chain,memory[memory.size()-1].pick());
+	insertmemory(name,memory);
+	return result;
 }
 
 void readmemory(string name, vector<memorycell>& memory)
@@ -92,7 +105,7 @@ void readmemory(string name, vector<memorycell>& memory)
 
 	//preserve space for data
 	filesize/=12;
-	memory.reserve(filesize);
+	memory.reserve(filesize+1);
 
 	//read data
 	memfile.seekg(5,ios::beg);
@@ -121,4 +134,11 @@ vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe ga
 			r=m;
 	}
 	return memory.end();
+}
+
+void insertmemory(string name, vector<memorycell>& memory)
+{
+	//insert the last memorycell remembering the new location
+
+	//overwrite the memory file starting from the new location since the rest is the same
 }
