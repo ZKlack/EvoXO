@@ -9,3 +9,8 @@ add_executable(game
     game/main.cpp
     common/tictactoe.cpp
 )
+
+add_executable(AI
+    AI/main.cpp
+    common/tictactoe.cpp
+)
