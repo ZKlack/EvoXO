@@ -161,6 +161,27 @@ void readmemory(string name, vector<memorycell>& memory)
 	}
 }
 
+void rewrite(string name, vector<memorycell>& memory, vector<memorycell>::iterator begin, vector<memorycell>::iterator end)
+{
+	size_t index = begin - memory.begin();
+	size_t starting_byte = 5 + 12*index;
+
+	fstream memfile(name,ios::binary|ios::in|ios::out);
+	if(!memfile.is_open())
+	{
+		cerr<<"Error: unable to open file.";
+		throw(1);
+	}
+	memfile.seekp(starting_byte,ios::beg);
+
+	while(begin<end)
+	{
+		memfile.write(reinterpret_cast<char*>(&(*begin))+1,12);
+		++begin;
+	}
+	memfile.close();
+}
+
 vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe game)
 {
 	memorycell target = game;
@@ -180,14 +201,20 @@ vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe ga
 
 vector<memorycell>::iterator insertmemory(string name, vector<memorycell>& memory)
 {
-	//insert the last memorycell remembering the new location
-
-	//overwrite the memory file starting from the new location since the rest is the same
-	// NOTE: user rewrite()
-}
-
-void rewrite(string name, vector<memorycell>& memory, vector<memorycell>::iterator begin, vector<memorycell>::iterator end)
-{
-	//overwrite the memory starting from the cell ${first}
+	if(memory.size()==0)
+		throw(0);
+	vector<memorycell>::iterator itr = memory.end();
+	if(memory.size()<2)
+		return --itr;
 	
+	memorycell temp;
+	while(memory.begin()<--itr)
+	{
+		if(*(itr-1)<*itr)
+			break;
+		temp = *itr;
+		*itr = *(itr-1);
+		*(itr-1) = temp;
+	}
+	return itr;
 }
