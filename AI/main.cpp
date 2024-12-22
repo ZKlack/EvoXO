@@ -102,14 +102,17 @@ int calculate(string name, ZK::tictactoe game)
 	readmemory(name,memory);
 	vector<memorycell>::iterator cell = search(memory,game);
 	if(cell!=memory.end())
+	{
 		result = game.transform(chain,cell->pick());
+		rewrite(name,memory,cell,cell+1);
+	}
 	else
 	{
 		memory.push_back(game);
 		result = game.transform(chain,memory[memory.size()-1].pick());
 		cell = insertmemory(name,memory);
+		rewrite(name,memory,cell,memory.end());
 	}
-	rewrite(name,memory,cell,memory.end());
 	return result;
 }
 
