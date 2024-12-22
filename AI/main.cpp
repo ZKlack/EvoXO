@@ -218,3 +218,24 @@ vector<memorycell>::iterator insertmemory(string name, vector<memorycell>& memor
 	}
 	return itr;
 }
+
+void learn(string name, ZK::tictactoe game, int move, string cond)
+{
+	int8_t chain = game.reduce();
+	chain = game.dechainer(chain);
+	move = game.transform(chain,move);
+	vector<memorycell> memory;
+	readmemory(name,memory);
+	vector<memorycell>::iterator cell = search(memory,game);
+	vector<memorycell>::iterator end = cell+1;
+	if(cell==memory.end())
+	{
+		memory.push_back(game);
+		cell = insertmemory(name,memory);
+		end = memory.end();
+	}
+	/*
+		do the learning
+	*/
+	rewrite(name,memory,cell,end);
+}
