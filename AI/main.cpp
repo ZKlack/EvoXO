@@ -68,7 +68,7 @@ void readmemory(string name, vector<memorycell>& memory);
 void learn(string name, ZK::tictactoe game, int move, string cond);
 vector<memorycell>::iterator search(vector<memorycell>& memory, ZK::tictactoe game);
 vector<memorycell>::iterator insertmemory(string name, vector<memorycell>& memory);
-void rewrite(string name, vector<memorycell>& memory, vector<memorycell>::iterator first);
+void rewrite(string name, vector<memorycell>& memory, vector<memorycell>::iterator begin, vector<memorycell>::iterator end);
 
 int main(int argc, char* argv[])
 {
@@ -109,7 +109,7 @@ int calculate(string name, ZK::tictactoe game)
 		result = game.transform(chain,memory[memory.size()-1].pick());
 		cell = insertmemory(name,memory);
 	}
-	rewrite(name,memory,cell);
+	rewrite(name,memory,cell,memory.end());
 	return result;
 }
 
@@ -183,7 +183,7 @@ vector<memorycell>::iterator insertmemory(string name, vector<memorycell>& memor
 	// NOTE: user rewrite()
 }
 
-void rewrite(string name, vector<memorycell>& memory, vector<memorycell>::iterator first)
+void rewrite(string name, vector<memorycell>& memory, vector<memorycell>::iterator begin, vector<memorycell>::iterator end)
 {
 	//overwrite the memory starting from the cell ${first}
 	
